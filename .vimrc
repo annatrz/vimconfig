@@ -1,58 +1,89 @@
-" README - plugins
+" SHORTCUTS
 "
-" PATHOGEN 
-" just git clone a repository with plugin in ~/.vim/bundle/
+" :e                    reload file
 "
-" NERDTREE
-" Ctrl-N  to open a file browser
+" ‘.                    jump to last edited line
+" g;                    jump to last edited position
+" :ll                   jump to error
 "
-" CLOSETAG
-" when typing e tag, hit > two times to get ending tag in the separated line
+" *                     search for occurrences under cursor
 "
-" VIM-DISTINGUISHED
-" color theme for vim
+" :%                    mark whole file
+" yy                    copy whole line
 "
-" DELIMITMATE
-" automatically closes brackets and other delimiters (not tags!)
+" >                     to fix indent
+" ==                    indent current line
 "
-" SUPERTAB
-" autcompletion using tab key
+" Ctrl-Z                to go to terminal
+" fg                    to go back
 "
-" SYNTASTIC
-" for syntax checking
-" hit :ll to jump to the next error
-" :Error to see all errors
+" CTRL-o                go back to last location
+" CTRL-r                replace variable name
 "
-" VIM-SURROUND
-" cs"’ change surr. of cursor
-" ysiw<html> add tag 
-" VS<body> add tag around selected lines
-" ds( delete surround.
-" yss( add ()for whole line
+" CTRL-x                split tab
+" CTRL-v                vertical split tab
 "
-" BROWSERLINK
-" track your changes in html files online
-" grease monkey is need also with following script added to every page on
-" http://localhost*:
-" var src = document.createElement("script");
-" src.src = "http://127.0.0.1:9001/js/socket.js";
-" src.async = true;
-" document.head.appendChild(src);
+"""""""""""""""""""""""""
+" Closetag
+"
+"<tag>>                  use extra > when closing tag to move to the next line
+"
+"""""""""""""""""""""""""
+" Surroundings
+"
+" ds"                   delete surroundings "
+" dst                   delete surrounding tag
+" cs"'                  change surroundings from " to '
+" cs'<q>                change surroundings from ' to <q> tag
+" cst"                  change surroundings tag to "
+" ysiw[                 yank surrounding [ in word
+" yss[                  yank surrounding [ for sentence (line)
+" VS<p class="cls">     insert surrounding using viusal mode
+"
+"""""""""""""""""""""""""
+" Jedi
+"
+" for python completion|definitions|refs
+" needs python-language-server for python
+"
+"
+" <C-Space>             completion
+" <leader>g             goto function
+" <leader>d             goto definition
+" <leader>r             rename
+" <leader>n             show all usages of a name
+" K                     show documentation
+"
+"""""""""""""""""""""""""
+" DelimitMate
+"
+" close brackets
+"
+"""""""""""""""""""""""""
+" ALE
+"
+" for linting and fixing
+"
+"""""""""""""""""""""""""
+" Airline
+"
+" powerline for vim
+"
+"""""""""""""""""""""""""
 
+packadd! nord-vim
+colorscheme nord
 
 filetype off
 
-execute pathogen#infect()
-call pathogen#helptags()
-
 " filetype on enables filetype detection by vim
-filetype plugin indent on 
+filetype plugin indent on
 
 " Turn on that syntax highlighting
 syntax enable
 
 if $TERM == "xterm-256color" || $TERM == "screen-256color" || $COLORTERM == "gnome-terminal"
-	set t_Co=256
+    set t_Co=256
 endif
 
 " Forget being compatible with good ol' vi
@@ -101,66 +132,81 @@ set wildmenu
 " Set auto indent
 set autoindent
 
-" Higlight all search results
+" higlight all search results
 set hlsearch
 
 " for brackets (will jump for a moment to the ending bracket)
 set showmatch
 
-" Set the status line the way I like it
-set stl=%f\ %m\ %r\ Line:\ %l/%L[%p%%]\ Col:\ %c\ Buf:\ #%n\ [%b][0x%B]
-
 " tell Vim to always put a status line in, even if there is only one
 " window
 set laststatus=2
 
-" Hide the mouse pointer while typing
+" hide the mouse pointer while typing
 set mousehide
 
 " disable mouse
-set mouse= 
+set mouse=
 
-" vim-distinguished
-colorscheme distinguished
-
-" Hide toolbars and menus in gvim
+" hide toolbars and menus in gvim
 set guioptions=ac
 
 set history=100
 
-" Allow the cursor to go in to "invalid" places
+" allow the cursor to go in to "invalid" places
 set virtualedit=all
 
 " get rid of flashing when you reached the end of the file
 set visualbell
 set t_vb=
 
-nmap <silent> ,ev :e $MYVIMRC<cr>
-nmap <silent> ,b :buffers<cr>
-nmap <silent> ,bb :b#<cr>
-nmap <silent> ,bn :bnext<cr>
-nmap <C-I> gg=G
+" set space as a leader key, make sure wasnt used before
+nnoremap <SPACE> <Nop>
+let mapleader=" "
+
+" some useful shortcuts
+nmap <leader>ev :e $MYVIMRC<cr>
+nmap <leader>b :buffers<cr>
+nmap <leader>bb :b#<cr>
+nmap <leader>bn :bnext<cr>
+
+" indent al lines
+nmap <leader>i gg=G
+
+" ctrl p
+nnoremap <leader>p :FZF<CR>
 
 " automatically compile tex files
-:autocmd BufWritePost *.tex !pdflatex main.tex <afile>
+autocmd BufWritePost *.tex !pdflatex main.tex <afile>
 
-let g:syntastic_python_checkers=['flake8', 'pep8'] 
+" share default vim register with system one
+set clipboard=unnamed
 
-" for closetag plugin
-let g:closetag_filenames = "*.html,*.xhtml,*.phtml"
+"""""""""""""""""""""""""
+" vim-airline handle powerline fonts
+"""""""""""""""""""""""""
+let g:airline_powerline_fonts = 1
 
-" open nerdtree automatically, when vim starts up
-" autocmd vimenter * NERDTree
-" hit ctrl-N to open the nerdtree window
-map <C-n> :NERDTreeToggle<CR>
+"""""""""""""""""""""""""
+" ALE
+"""""""""""""""""""""""""
+let g:ale_linters = {
+\   'python': ['flake8', 'pydocstyle'],
+\}
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'javascript': ['eslint'],
+\   'python': ['yapf','isort']
+\}
+let g:ale_fix_on_save = 1
+let g:ale_completion_autoimport = 1
 
-" syntastic errors will be populated in the loclist
-" to jump to the nex error on the list hit :ll
-let g:syntastic_always_populate_loc_list=1
+"""""""""""""""""""""""""
+" DelimitMate handle triple quotes in python
+"""""""""""""""""""""""""
+autocmd FileType python let b:delimitMate_nesting_quotes = ['"']
 
-:autocmd BufWritePost *.py !isort <afile>
-
-" 
-let g:ctrlp_working_path_mode = 'r'
-let g:ctrlp_max_files=0
-let g:ctrlp_max_depth=50
+"""""""""""""""""""""""""
+" Vim-closetag which files types
+"""""""""""""""""""""""""
+let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.php,*.js,*.jsx"
